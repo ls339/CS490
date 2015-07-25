@@ -1,0 +1,62 @@
+
+Users
++----------+-------------+------+-----+---------+----------------+
+| Field    | Type        | Null | Key | Default | Extra          |
++----------+-------------+------+-----+---------+----------------+
+| Id       | int(8)      | NO   | PRI | NULL    | auto_increment |
+| First    | varchar(30) | YES  |     | NULL    |                |
+| Last     | varchar(30) | YES  |     | NULL    |                |
+| User     | varchar(10) | YES  |     | NULL    |                |
+| Password | varchar(15) | YES  |     | NULL    |                |
+| Types    | int(11)     | YES  |     | 0       |                |
+| Email    | varchar(25) | YES  |     | NULL    |                |
++----------+-------------+------+-----+---------+----------------+
+
+QuestionBank
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| qid      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| question | varchar(255) | YES  |     | NULL    |                |
+| answer   | varchar(255) | YES  |     | NULL    |                |
+| type     | varchar(255) | YES  |     | NULL    |                |
+| ExamId   | int(11)      | YES  |     | NULL    |                |
+| Opt1     | varchar(100) | YES  |     | NULL    |                |
+| Opt2     | varchar(100) | YES  |     | NULL    |                |
+| Opt3     | varchar(100) | YES  |     | NULL    |                |
+| Opt4     | varchar(100) | YES  |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+
+Exam
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Id        | int(11)     | YES  |     | NULL    |       |
+| TestName  | varchar(20) | YES  |     | NULL    |       |
+| Available | varchar(10) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+
+Scores
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| UserId   | int(11)     | YES  |     | NULL    |       |
+| TestName | varchar(20) | YES  |     | NULL    |       |
+| Score    | int(11)     | YES  |     | NULL    |       |
+| Released | int(11)     | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+
+/* README 
+ * This table will need to be created dynamically 
+ * for each user taking a test. Once the final submission is done
+ * this table will be delted and the test will no longer be available
+ * to the student.
+ * The name of this table will be unique for each student.
+ */
+ Temp_$UserId_$TestName;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| qid        | int(11)      | YES  |     | NULL    |       |
+| UserAnswer | varchar(100) | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
