@@ -25,6 +25,7 @@ QuestionBank
 | Opt2     | varchar(100) | YES  |     | NULL    |                |
 | Opt3     | varchar(100) | YES  |     | NULL    |                |
 | Opt4     | varchar(100) | YES  |     | NULL    |                |
+| Weight   | int(11)      | YES  |     | NULL    |                |
 +----------+--------------+------+-----+---------+----------------+
 
 Exam
