@@ -3,7 +3,6 @@
   // proc.php : BETA to RC
 
 function auth($username, $password) {
-
     // curl function to backend
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/login.php");
@@ -31,7 +30,6 @@ function auth($username, $password) {
 }
 
 function addTFQuestion($question, $answer) {
-    
     $json = array();
     $ch = curl_init();
     //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/beta/model.php"); // Mock Backend
@@ -61,6 +59,7 @@ function addTFQuestion($question, $answer) {
     echo json_encode($json);
 
 }
+
 function addMCQuestion($poststring) {
     $question = $poststring["Question"];
     $answer = $poststring["answer"];
@@ -96,11 +95,11 @@ function addMCQuestion($poststring) {
     $json["message"] = "Successfully added MC question";
     echo json_encode($json);
 }
+
 function addOEQuestion($question,$answer) {
 
   //echo $question."<br>";
-  //echo $answer."<br>";
-    
+  //echo $answer."<br>";    
   $json = array();
   $ch = curl_init();
   //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/beta/model.php");
@@ -161,8 +160,6 @@ function newExam() {
 
 function createExam($poststring) {
     $json = array();
-    
-    
     if($poststring["ExamName"] == "") {
         $json["status"] = "fail";
         $json["message"] = "You must provide an exam name!";
@@ -250,6 +247,7 @@ function takeExam($poststring) {
     $json["next"] = $next;
     echo json_encode($json);
 }
+
 function updateQuestion($qid,$status,$exam) {
     /* Need code for backend to update the answer to a question */
     $ch = curl_init();
@@ -261,6 +259,7 @@ function updateQuestion($qid,$status,$exam) {
     
     echo $ch_output;
 }
+
 function checkAnswer($qid, $answer, $exam) {
     $json = array();
     $ch = curl_init();
@@ -296,6 +295,7 @@ function checkAnswer($qid, $answer, $exam) {
     
     echo json_encode($json);
 }
+
 function examScores($username) {
     
     /*
@@ -390,6 +390,5 @@ switch ($_POST["cmd"]) {
         break;
     default:
         echo "You need to send me a command, for example: cmd = auth ";
-}
- 
+} 
 ?>
