@@ -734,6 +734,7 @@ function ReleaseScore($poststring) {
     $decoded_json = json_decode($output);
     */
     echo "ok in function ReleaseScore";
+    echo 
     // Pretend to send json objectname" => "Jack", "exam" => "Exam1","score" => "70%","releaseStatus" => "0"),array("name" => "Jill", "exam" => "Final","score" => "80%","releaseStatus" => "1")));
 }
 
