@@ -548,13 +548,13 @@ function submitExam($postdata) {
     //echo "|".$postdata['userId']."|";
     //$json["examName"] = $postdata["examName"];
     //$json["user"] = $postdata["user"];
-    //$json["userId"] = $postdata["userId"];
+    $json["message"] = "ok";
     echo json_encode($json);
 }
 
 // Do I really need this? Yes I do.
 function checkAnswer($postdata) {
-    //echo "in check answer";
+    echo "in check answer";
 ///function checkAnswer($qid, $answer, $exam) {
     $json = array();
     $ch = curl_init();
@@ -567,9 +567,9 @@ function checkAnswer($postdata) {
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
-
+   
     $examList = json_decode($output);
-    //echo $output;
+    echo "CCCCCC";    
     //echo $examList[2]->{'Id'};
     for ($i = 0; $i < count($examList); $i++) {
         if ($examList[$i]->{'TestName'} == $postdata["examName"])
@@ -650,20 +650,27 @@ function examScores($username) {
     for($i=0;$i<count($students);$i++) {
         //get testid
         //http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttestsubmit.php
+        //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttestsubmit.php");
         curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttestsubmit.php");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=".$students[$i]->{'UserId'});
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
+        //echo $output;
         $testId = json_decode($output);
-        
+        //echo count($testId);
         for($j=0;$j<count($testId);$j++){
+            //echo "testing";
+            //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttest.php");
             curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttest.php");
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=".$students[$i]->{'UserId'}."&testid=".$testId[$j]->{'TestId'});
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($ch);
             $testresults = json_decode($output);
             $score = 0;
             //echo $output;
+            echo "studentid=".$students[$i]->{'UserId'}."&testid=".$testId[$j]->{'TestId'};
             //echo count($testresults);
             for($k=0;$k<count($testresults);$k++){
                 //echo $testresults[$k]->{'studentanswer'};
@@ -676,6 +683,7 @@ function examScores($username) {
             //Display the Exam Name instead of Id
             curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettest.php");
             curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($ch);
             $testlist = json_decode($output);
             for($k=0;$k<count($testlist);$k++){
@@ -683,8 +691,20 @@ function examScores($username) {
                     $exam = $testlist[$k]->{'TestName'};
                 }
             }
+            //Need to get release status here
+            curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttestsubmit.php");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=" . $students[$i]->{'UserId'});
+            $output = curl_exec($ch);
+            $teststatus = json_decode($output);
+            //echo $output;
+            //echo "ScoreRelease = ".$teststatus[0]->{'ScoreRelease'}."<--";
             
-            $json[] = array('name'=>$students[$i]->{'FirstName'}." ".$students[$i]->{'LastName'},"releaseStatus" => $students[$i]->{'ScoreRelease'},'exam' => $exam, 'score' => $score );
+            for($k=0;$k<count($teststatus);$k++) {
+                if($teststatus[$k]->{'TestId'}==$testId[$j]->{'TestId'}) $releaseStatus = $teststatus[$k]->{'ScoreRelease'};
+            }
+            $json[] = array('name'=>$students[$i]->{'FirstName'}." ".$students[$i]->{'LastName'},"releaseStatus" => $releaseStatus,'exam' => $exam, 'score' => $score, 'studentId' => $students[$i]->{'UserId'},'examId' => $testId[$j]->{'TestId'});
+            //$json[] = array('name'=>$students[$i]->{'FirstName'}." ".$students[$i]->{'LastName'},"releaseStatus" => $students[$i]->{'ScoreRelease'},'exam' => $exam, 'score' => $score );
         }
         
         // Get studenttest
@@ -700,9 +720,65 @@ function examScores($username) {
     echo json_encode($json);
     //echo json_encode(array(array("name" => "Jack", "exam" => "Exam1","score" => "70%","releaseStatus" => "0"),array("name" => "Jill", "exam" => "Final","score" => "80%","releaseStatus" => "1")));
 }
-// Do I really need this?
-function getScores($username) {
+// Do I really need this? Yes I do
+function getScores($userId) {
     
+    //echo $userId;
+    $json = array();
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttestsubmit.php");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=" . $userId);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($ch);
+    //echo $output;
+    $testsubmit = json_decode($output);
+    //echo count($testsubmit);
+    for($i=0;$i<count($testsubmit);$i++){
+        //echo test;
+        //Display the Exam Name instead of Id
+        //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettest.php");
+        curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/gettest.php");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        //echo $output;
+        $testlist = json_decode($output);
+        for ($j = 0; $j < count($testlist); $j++) {
+            if ($testlist[$j]->{'Id'} == $testsubmit[$i]->{'TestId'}) {
+                $exam = $testlist[$j]->{'TestName'};
+            }
+        }
+        //echo $exam;
+        //echo $testsubmit[$i]->{'ScoreRelease'};
+        if($testsubmit[$i]->{'ScoreRelease'}==1) {
+            // Calculate Score
+            curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttest.php");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=".$userId."&testid=".$testsubmit[$i]->{'TestId'});
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch);
+            $testresults = json_decode($output);
+            $score = 0;
+            //echo "----".$output."-----";
+            for ($k = 0; $k < count($testresults); $k++) {
+                //echo $testresults[$k]->{'studentanswer'};
+                //echo $testresults[$k]->{'correctanswer'};
+                //echo $testresults[$k]->{'weight'};
+                if ($testresults[$k]->{'studentanswer'} == $testresults[$k]->{'correctanswer'}) {
+                    $score = $score + $testresults[$k]->{'weight'};
+                }
+            }
+            
+            $score = ( $score / count($testresults) ) ;
+            //echo $testsubmit[$i]->{'ScoreRelease'};
+            $json[] = array('exam' => $exam, 'score' => $score);
+        }
+        //$json[] = array('exam' => $exam, );
+    }
+    //echo $json[0]["score"];
+    curl_close($ch);
+    //echo $json_encode($json);
     /*
     $ch = curl_init();
     //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/beta/model.php");
@@ -714,14 +790,16 @@ function getScores($username) {
     $output = curl_exec($ch);
     $decoded_json = json_decode($output);
     */
+    echo json_encode($json);
     // Pretend to send json object
-    echo json_encode(array(array("exam" => "Exam1","score" => "70%"),array("exam" => "Final","score" => "80%",)));
+    //echo json_encode(array(array("exam" => "Exam1","score" => "70%"),array("exam" => "Final","score" => "80%",)));
     //echo json_encode(array(array("name" => "Jack", "exam" => "Exam1","score" => "70%","releaseStatus" => "0"),array("name" => "Jill", "exam" => "Final","score" => "80%","releaseStatus" => "1")));
 }
 
 // FIX THIS
 function ReleaseScore($poststring) {
     
+    
     /*
     $ch = curl_init();
     //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/beta/model.php");
@@ -733,7 +811,20 @@ function ReleaseScore($poststring) {
     $output = curl_exec($ch);
     $decoded_json = json_decode($output);
     */
-    echo "ok in function ReleaseScore";
+    
+    // Nee to point this to backend
+    $ch = curl_init();
+    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttestsubmit.php");
+    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/studentscorerelease.php");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=" . $poststring['studentId']."&testid=".$poststring['examId']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($ch);
+    //$testId = json_decode($output);
+    //echo $output;
+    //echo "studentid=" . $poststring['studentId']."&testid=".$poststring['examId'];
+    //echo "ok in function ReleaseScore";
+    //echo 
     // Pretend to send json objectname" => "Jack", "exam" => "Exam1","score" => "70%","releaseStatus" => "0"),array("name" => "Jill", "exam" => "Final","score" => "80%","releaseStatus" => "1")));
 }
 
@@ -777,7 +868,8 @@ switch ($_POST["cmd"]) {
         break;
     case "checkAnswer":
         //checkAnswer($_POST["qid"],$_POST["answer"],$_POST["exam"]);
-        checkAnswer($_POST);
+        //checkAnswer($_POST);
+        echo "in SWITCH";
         break;
     case "submitExam":
         submitExam($_POST);
@@ -785,11 +877,11 @@ switch ($_POST["cmd"]) {
     case "examScores":
         examScores($_POST["username"]);
         break;
+//    case "getScores":
+//        getScores($_POST["username"]);
+//        break;
     case "getScores":
-        getScores($_POST["username"]);
-        break;
-    case "getScores":
-        getScores($_POST["username"]);
+        getScores($_POST["userId"]);
         break;
     case "releaseScore":
         releaseScore($_POST);
