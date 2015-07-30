@@ -554,7 +554,7 @@ function submitExam($postdata) {
 
 // Do I really need this? Yes I do.
 function checkAnswer($postdata) {
-    echo "in check answer";
+    //echo "in check answer";
 ///function checkAnswer($qid, $answer, $exam) {
     $json = array();
     $ch = curl_init();
@@ -569,7 +569,7 @@ function checkAnswer($postdata) {
     $output = curl_exec($ch);
    
     $examList = json_decode($output);
-    echo "CCCCCC";    
+    //echo "CCCCCC";    
     //echo $examList[2]->{'Id'};
     for ($i = 0; $i < count($examList); $i++) {
         if ($examList[$i]->{'TestName'} == $postdata["examName"])
@@ -670,7 +670,7 @@ function examScores($username) {
             $testresults = json_decode($output);
             $score = 0;
             //echo $output;
-            echo "studentid=".$students[$i]->{'UserId'}."&testid=".$testId[$j]->{'TestId'};
+            //echo "studentid=".$students[$i]->{'UserId'}."&testid=".$testId[$j]->{'TestId'};
             //echo count($testresults);
             for($k=0;$k<count($testresults);$k++){
                 //echo $testresults[$k]->{'studentanswer'};
@@ -868,8 +868,8 @@ switch ($_POST["cmd"]) {
         break;
     case "checkAnswer":
         //checkAnswer($_POST["qid"],$_POST["answer"],$_POST["exam"]);
-        //checkAnswer($_POST);
-        echo "in SWITCH";
+        checkAnswer($_POST);
+        //echo "in SWITCH";
         break;
     case "submitExam":
         submitExam($_POST);
