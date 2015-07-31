@@ -17,19 +17,22 @@ echo $_POST['qid'][0];
 echo $_POST['qid'][1];*/
 //$qid ="qid[]";
 //$add ="cmd=createExam&ExamName=".$_POST['ExamName']."&qid=".$_POST['qid'];
-curl_setopt( $ch,CURLOPT_URL,"http://afsaccess2.njit.edu/~ls339/cs490/middle/beta/proc.php");
+curl_setopt( $ch,CURLOPT_URL,"http://afsaccess2.njit.edu/~ls339/cs490/middle/proc.php");
 curl_setopt($ch,CURLOPT_POST,true);
 curl_setopt($ch,CURLOPT_POSTFIELDS,$post);
 //curl_setopt($ch,CURLOPT_HTTPHEADER,array("Content-type: multipart/form-data"));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $send=curl_exec($ch);
-echo $send;
+//echo $send;
 $var= json_decode($send);
 //echo print_r($_POST['qid']);
 if($var->{'status'}=='ok'){
     header('Location: createQuiz.php');
 }else{
+    include('header.php');
     echo "Contact admin for more help";
+    echo "<br>";
+    echo $var->{'message'};
 }
 ?>
 

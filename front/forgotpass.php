@@ -35,6 +35,7 @@ if (!$username) {
             </tr>
             <tr>
             <td></td>
+            <input type=\"hidden\" value=\"resetPass\" name=\"cmd\">
             <td><input type='submit' name='resetbtn' value='Reset Password'/></td>
             </tr>
         </form>";

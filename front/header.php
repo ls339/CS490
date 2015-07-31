@@ -27,9 +27,9 @@ a       {color:black;
 			    <li>
                                 <a href="Logout.php">Logout</a>
 			    </li>
-                            <li>
+                            <!--<li>
                                 <a href="forgotpass.php">Forgot Password</a>
-                            </li></center>
+                            </li>--></center>
 			</ul>
 		    </div>
 		</div>

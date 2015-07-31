@@ -1,7 +1,7 @@
 <?php
  ob_start();
     session_start();
-    if(!isset($_SESSION['teacher']))header('Location: index.html');
+    if(!isset($_SESSION['teacher']))header("Location: index.php");
     include('thead.php');
 ?>
 <center><div class="content-create" id="TF">

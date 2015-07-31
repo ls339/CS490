@@ -1,7 +1,7 @@
 <?php
  ob_start();
     session_start();
-    if(!isset($_SESSION['teacher']))header('Location: index.html');
+    if(!isset($_SESSION['teacher']))header("Location: index.php");
     include('thead.php');
 ?>
 <style>
@@ -12,7 +12,7 @@ th,td {padding:5px;}
 
 $dataString = 'cmd=newExam';
 $ch = curl_init();
-curl_setopt( $ch,CURLOPT_URL,"http://afsaccess2.njit.edu/~ls339/cs490/middle/beta/proc.php");
+curl_setopt( $ch,CURLOPT_URL,"http://afsaccess2.njit.edu/~ls339/cs490/middle/proc.php");
 curl_setopt($ch,CURLOPT_POST,true);
 curl_setopt($ch,CURLOPT_POSTFIELDS,$dataString);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -55,14 +55,14 @@ echo "</form></center>";}else{
 
 $dataString = 'cmd=newExam';
 $ch = curl_init();
-curl_setopt( $ch,CURLOPT_URL,"http://afsaccess2.njit.edu/~ls339/cs490/middle/beta/proc.php");
+curl_setopt( $ch,CURLOPT_URL,"http://afsaccess2.njit.edu/~ls339/cs490/middle/proc.php");
 curl_setopt($ch,CURLOPT_POST,true);
 curl_setopt($ch,CURLOPT_POSTFIELDS,$dataString);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $send=curl_exec($ch);
 $tests= json_decode($send);
 //Needs to be worked on
-if(count($test)){
+/*if(count($test)){
 echo  "<form <!--action= \"addQuiz.php\"--> method=\"POST\">";
 echo  "<br/>";
 echo  "Pick a Test<br/>";
@@ -83,5 +83,5 @@ echo "</tr>";
 echo "<input name=\"submit\" type=\"submit\" value=\"Submit\" >";
 echo "</form>";}else{
     echo "There are no Tests";
-}
+}*/
         ?>

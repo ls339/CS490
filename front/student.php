@@ -1,7 +1,7 @@
 <?php
      ob_start();
     session_start();
-    if(!isset($_SESSION['student']))header('Location: index.html');
+    if(!isset($_SESSION['student']))header('Location: index.php');
     include('studentHeader.php');
 ?>
 <center><div class="alert alert-success">

@@ -24,7 +24,9 @@ Password:<br>
 <input type="password" name="password">
 <br><br>
 
-<input name="submit" onclick="myFunction()"  type="submit" value="Submit">
+<input name="submit" type="submit" value="Submit"><!--<li>
+                                <a href="forgotpass.php">Forgot Password</a>
+                            </li>-->
 </form>
 <p id ="output"></p>
 </center>
