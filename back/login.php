@@ -3,7 +3,7 @@
 $conn = new mysqli("sql2.njit.edu", "es66", "bartok58", "es66");
 $user=$_POST["user"];
 $password=$_POST["password"];
-$myquery = "SELECT COUNT(*) as mycount, Id, Types FROM Users WHERE User='".$user."' AND Password='".$password."';";
+$myquery = "SELECT COUNT(*) as mycount, Id, Types, First, Last, Email FROM Users WHERE User='".$user."' AND Password='".$password."';";
 //echo $myquery;
 $result = $conn->query($myquery); 
 $result = $result->fetch_assoc();
@@ -18,7 +18,9 @@ else
 {	$json["login"]="success";
 	$json["UserId"]=$result['Id'];
 	$json["Type"] = $result["Types"];
-	
+	$json["First"] = $result["First"];
+        $json["Last"] = $result["Last"];
+        $json["Email"] = $result["Email"];
 	//echo "{\"login\":\"success\"}";
 }
 echo json_encode($json);

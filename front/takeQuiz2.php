@@ -28,7 +28,7 @@ curl_setopt($ch,CURLOPT_POST,true);
 curl_setopt($ch,CURLOPT_POSTFIELDS,"cmd=takeExam&examName=".$_GET["examName"]."&username=".$_SESSION["user"]."&qid=".$_GET["qid"]."&userid=".$_SESSION['userId']."&userAnswer=".$userAnswer);
 curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
 $send=curl_exec($ch);
-//echo $send;
+echo $send;
 //echo "this is working";
 
 $var = json_decode($send);
@@ -97,7 +97,7 @@ if($var->{type}=='mc'){
         echo "<input type=\"radio\" name=\"Answer\" value=\"C\">".$var->{Opt2}."<br>";
     }
     //if($var->{userAnswer}=='D'){
-    if($checkAnswer->{userAnswer}=='D'){
+    if($checkAnswer->{userAnswer}=='D'||$var->{userAnswer} =='D'){
         echo "<input type=\"radio\" name=\"Answer\" value=\"D\" checked=\"checked\">".$var->{Opt3}."<br>";
     }else{
         echo "<input type=\"radio\" name=\"Answer\" value=\"D\">".$var->{Opt3}."<br>";
@@ -121,10 +121,14 @@ if($var->{type}=='oe'){
     //echo "OE";
     echo "<form method= \"POST\">";
     //if($var->{userAnswer}!=''){
-    if($checkAnswer->{userAnswer}!=''){
+    if($checkAnswer->{userAnswer} != '' && $var->{userAnswer} == ''){
         //echo "<input type=\"text\" name=\"Answer\" value=\"".$var->{'userAnswer'}."\"><br>";
         echo "<input type=\"text\" name=\"Answer\" value=\"".$checkAnswer->{'userAnswer'}."\"><br>";
-    }else{
+    } else if($checkAnswer->{userAnswer} == '' && $var->{userAnswer} != ''){
+        echo "<input type=\"text\" name=\"Answer\" value=\"".$var->{'userAnswer'}."\"><br>";
+    } else if($checkAnswer->{userAnswer} != '' && $var->{userAnswer} != '') {
+        echo "<input type=\"text\" name=\"Answer\" value=\"".$var->{'userAnswer'}."\"><br>"; 
+    } else {
         echo "<input type=\"text\" name=\"Answer\">";
     }
     //echo "<input type=\"text\" name=\"Answer\">";

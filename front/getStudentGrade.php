@@ -29,7 +29,7 @@ $var = json_decode($send);
     for ($i = 0; $i < count($var); $i++) {
         echo "<tr>";
         echo "<td>".$var[$i]->{exam}."</td>";
-        echo "<td>".$var[$i]->{score}."</td>";
+        echo "<td><a href=\"feedback.php?exam=".$var[$i]->{exam}."\">".$var[$i]->{score}."<a></td>";
         echo "</tr>";
         /*if ($var[$i]->{testingStatus} == 0) {
             echo "<form action= \"takeQuiz.php\" method= \"GET\">";
