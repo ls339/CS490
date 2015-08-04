@@ -8,7 +8,8 @@
 th,td {padding:5px;}
 //if {display: inline}
 </style>
-<script src="java.js"></script>
+<script src="java2.js"></script>
+ <body onload="filterb()">
 <?php
 $dataString = 'cmd=newExam';
 $ch = curl_init();
@@ -57,27 +58,26 @@ echo "<input type=\"text\" name=\"ExamName\">";
 echo "<input type=\"hidden\" name=\"cmd\" value=\"createExam\">";
 echo "<input name=\"submit\" type=\"submit\" value=\"Submit\">";
 echo "</form>";
-echo "</center>";
+//echo "</center>";
 echo "<hr>";
 
 /* Filtering */
 echo "<form method=\"POST\">";
-echo "<select name=\"type\">";
-echo "<option value=\"all\">All</option>";
-echo "<option value=\"tf\">True False</option>";
-echo "<option value=\"mc\">Multiple Choice</option>";
-echo "<option value=\"oe\">Open Ended</option>";
+echo "<select id=\"type\" onChange=\"filterb()\">";
+echo "<option>All</option>";
+echo "<option>True False</option>";
+echo "<option>Multiple Choice</option>";
+echo "<option>Fill in the blank</option>";
 echo "<select>";
-echo "<select name=\"weight\">";
-echo "<option value=\"all\">All</option>";
-echo "<option value=\"easy\">Easy</option>";
-echo "<option value=\"medium\">Medium</option>";
-echo "<option value=\"hard\">Hard</option>";
+echo "<select id=\"weight\" onChange=\"filterb()\">";
+echo "<option>All</option>";
+echo "<option>Easy</option>";
+echo "<option>Medium</option>";
+echo "<option>Hard</option>";
 //echo "<option value=\"oe\">Open Ended</option>";
 echo "<select>";
-echo "<input type=\"submit\" value=\"filter\">";
+//echo "<input type=\"button\" onclick=\"filterb()\" value=\"filter\">";
 echo "</form>";
-
 //if (count($questions) > 0) {
     //echo "<center><form action= \"addQuiz.php\" method=\"POST\">";
     //echo "<br/>";
@@ -85,14 +85,20 @@ echo "</form>";
     //echo "<input type=\"text\" name=\"ExamName\">";
     //echo "<br/>";
     //echo "<input type=\"hidden\" name=\"cmd\" value=\"createExam\">";
-    echo "<table border=\"1\ class=\"inlineTable\" <!--style=\"float:left-->\">";
+    echo "<table border=\"1\" class=\"inlineTable\" id=\"questionList\">";
+    
     echo "<tr>";
     echo "<th>Select Question</th>";
     echo "<th>Question</th>";
     echo "<th>Weight</th>";
     echo "<th>Type</th>";
     echo "</tr>";
-    for ($i = 0; $i < count($questions); $i++) {
+    echo "<tbody id=\"qList\"></tbody>";
+    
+    
+    //echo"<tr>";
+    //echo "<td><input type=\"checkbox\" name=\"filteredQs\" id=\"filteredQs\" ></td>";
+    /*for ($i = 0; $i < count($questions); $i++) {
         echo "<tr>";
         //echo "<td><input type=\"checkbox\" name=\"q".$i."\" value=\"".$questions[$i]->{qid}."\" ></td>";
         //echo "<td><input type=\"checkbox\" name=\"qid[]\" value=\"" . $questions[$i]->{qid} . "\" ></td>";
@@ -101,7 +107,7 @@ echo "</form>";
         echo "<td>" . $questions[$i]->{weight} . "</td>";
         echo "<td>" . $questions[$i]->{type} . "</td>";
         echo "</tr>";
-    }
+    }*/
     echo"</table>";
     //echo "<input name=\"submit\" type=\"submit\" value=\"Submit\">";
     echo "</form></center>";
@@ -111,5 +117,4 @@ echo "</form>";
 }
      * 
      */
-
         ?>

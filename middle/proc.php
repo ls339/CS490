@@ -7,8 +7,8 @@ include "proc_func.php";
 function auth($username, $password) {
     $ch = curl_init();
     // Need to point to real backend
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/login.php");
-    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/login.php");
+    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/login.php");
+    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/login.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, 'user='.$username.'&password='.$password);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -47,6 +47,7 @@ function addTFQuestion($question, $answer, $difficulty) {
     $decoded_json = json_decode($output);
     curl_close($ch);
     $json["message"] = "ok";
+    $json["qid"] = "True False";
     echo json_encode($json);
 }
 
@@ -67,6 +68,7 @@ function addMCQuestion($poststring) {
     $output = curl_exec($ch);
     curl_close($ch);
     $json["message"] = "ok";
+    $json["qid"] = "Multiple Choice";
     echo json_encode($json);
 }
 
@@ -84,42 +86,67 @@ function addOEQuestion($question,$answer,$difficulty) {
   curl_close($ch);
   $decoded_json = json_decode($output);
   $json["message"] = "ok";
+  $json["qid"] = "Fill in the blank";
   echo json_encode($json);
 }
 
-function newExam() {  
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getquestions.php");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "classId=0");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $output = curl_exec($ch);
-    $questions = json_decode($output);
-    $json = array();
+function newExam($poststring) {
+
+    $weight = $poststring['weight'];
+    $type = $poststring['type'];
+    $questionList = getQuestionList();
+    //echo $weight;
     
-    for($i = 0;$i < count($questions);$i++) {
-        //$weight = "Easy";
-        curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getquestionanswers.php");
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "questionId=".$questions[$i]->{'Id'});
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($ch);
-        $questionAnswers = json_decode($output);
-        
-        
-        if ($questions[$i]->{'QuestionType'} == '1') {
-            $qtype = "Multiple Choice";
-        }
-        if ($questions[$i]->{'QuestionType'} == '2') {
-            $qtype = "True False";
-        }
-        if ($questions[$i]->{'QuestionType'} == '3') {
-            $qtype = "Open Ended";
-        }        
-        $json[] = array('question' => $questions[$i]->{'Question'}, 'qid' => $questions[$i]->{'Id'}, 'weight' => $questions[$i]->{'Weight'}, 'type' => $qtype);
+    //echo $poststring['weight'] . "\n";
+    //echo $poststring['type'] . "\n";
+    /*
+    if ($poststring['weight'] == "") {
+        echo "weight empty";
     }
-    curl_close($ch);
-    echo json_encode($json);
+     * 
+     */
+    //if(!isSet($poststring['weight']) && !isSet($type)) {
+    echo sortQuestions($questionList,$type,$weight);
+    /*if ($type == "All" && $weight == "All") {
+        echo $questionList;
+        //echo getQuestionList();
+        //echo json_encode(array(array('qid' => '2', 'question' => 'in the if', 'weight' => '1', 'type' => 'True False')));
+    } else {
+        echo sortQuestions($questionList,$type,$weight);
+    }
+     * 
+     */
+
+        /*
+    } else if($type == "True False" && $weight == "All") {
+        echo sortQuestions($questionList,$type,$weight);
+    } else if($type == "True False" && $weight == "Easy") {
+        echo sortQuestions($questionList,$type,$weight);
+        //echo json_encode(array(array('qid' => '1', 'question' => 'True False Easy', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "True False" && $weight == "Medium") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'True False Medium', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "True False" && $weight == "Hard") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'True False Hard', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "Multiple Choice" && $weight == "All") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'MC ALL', 'weight' => '1', 'type' => 'adfads')));
+    } else if($type == "Multiple Choice" && $weight == "Easy") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'MC easy', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "Multiple Choice" && $weight == "Medium") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'MC medium', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "Multiple Choice" && $weight == "Hard") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'MC hard', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "Fill in the blank" && $weight == "All") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'FITB ALL', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "Fill in the blank" && $weight == "Easy") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'FITB Easy', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "Fill in the blank" && $weight == "Medium") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'FITB Medium', 'weight' => '1', 'type' => 'True False')));
+    } else if($type == "Fill in the blank" && $weight == "Hard") {
+        echo json_encode(array(array('qid' => '1', 'question' => 'FITB Hard', 'weight' => '1', 'type' => 'True False')));
+    }
+*/
+    //echo getQuestionList();
+    //echo json_encode(array(array('qid'=>'1','question'=>'the question','weight'=> '1','type'=> 'True False')));
 }
 
 function createExam($poststring) {
@@ -219,8 +246,8 @@ function getExams($userId) {
         // Need to the user id to check the availabilty of the exam to the user.
         //$testStatus = 0;
         // Need to copy this to real backend
-        curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/gettestsubmit.php");
-        //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettestsubmit.php");
+        //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/gettestsubmit.php");
+        curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettestsubmit.php");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, "userid=".$userId."&testid=".$decoded_output[$i]->{'Id'});
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -338,19 +365,18 @@ function takeExam($poststring) {
 }
 
 // May not need this function
+/*
 function updateQuestion($qid,$status,$exam) {
-    // Need to retire this function for now, we are going to display a single
-    // page for the test taking.
-    /* Need code for backend to update the answer to a question */
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/beta/model.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "cmd=updateQuestion&exam=" . $exam . "&qid=" . $qid."&status=".$status);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $ch_output = curl_exec($ch);
-    
     echo $ch_output;
 }
+ * 
+ */
 
 function submitExam($postdata) {
     
@@ -424,8 +450,8 @@ function checkAnswer($postdata) {
     $ch = curl_init();
     
     $datatest = "studentid=".$postdata["userId"]."&questionid=".$postdata["current"]."&studentanswer=".$postdata["Answer"]."&testid=".$TestId;
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/addstudenttest.php");
-    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/addstudenttest.php");
+    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/addstudenttest.php");
+    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/addstudenttest.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     //curl_setopt($ch, CURLOPT_POSTFIELDS, "cmd=getQuestions");
     curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=".$postdata["userId"]."&questionid=".$postdata["current"]."&studentanswer=".$postdata["Answer"]."&testid=".$TestId); // fix me
@@ -466,7 +492,8 @@ function examScores($username) {
     
     $ch = curl_init();
     //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/middle/beta/getstudents.php");
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudents.php");
+    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudents.php");
+    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getstudents.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
@@ -575,6 +602,7 @@ function getFeedback($userId, $examName) {
             }
             $json['question'.$i] = getQuestion($questions[$i]->{'QuestionId'});
             $json['qtype'.$i] = getQuestionType($questions[$i]->{'QuestionId'});
+            $json['qweight'.$i] = $questions[$i]->{'weight'};
             
             if(getQuestionType($questions[$i]->{'QuestionId'})=="Multiple Choice") {
                 $json['answer'.$i] = getMCQuestionAnswer($questions[$i]->{'correctanswer'},$questions[$i]->{'QuestionId'});
@@ -591,39 +619,56 @@ function getFeedback($userId, $examName) {
     }
     //echo getExamId($examName);
 }
-// FIX THIS
+
 function ReleaseScore($poststring) {
-    
-    
-    /*
     $ch = curl_init();
-    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/beta/model.php");
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettestquestions.php");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    //curl_setopt($ch, CURLOPT_POSTFIELDS, "cmd=getQuestions");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "cmd=getQuestions"); // fix me
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $output = curl_exec($ch);
-    $decoded_json = json_decode($output);
-    */
-    
-    // Nee to point this to backend
-    $ch = curl_init();
-    //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/getstudenttestsubmit.php");
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/studentscorerelease.php");
+    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/studentscorerelease.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=" . $poststring['studentId']."&testid=".$poststring['examId']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
-    //$testId = json_decode($output);
+    curl_close($ch);
+}
+
+function editExam($examId) {
+    $json = array();
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettestquestions.php");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "TestId=" . $examId);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($ch);
+    $questions = json_decode($output);
     //echo $output;
-    //echo "studentid=" . $poststring['studentId']."&testid=".$poststring['examId'];
-    //echo "ok in function ReleaseScore";
-    //echo 
-    // Pretend to send json objectname" => "Jack", "exam" => "Exam1","score" => "70%","releaseStatus" => "0"),array("name" => "Jill", "exam" => "Final","score" => "80%","releaseStatus" => "1")));
+    $json[] = getExamName($examId);
+    
+    for($i=0;$i<count($questions);$i++) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettestquestionanswers.php");
+        //curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/back/gettestquestionanswers.php");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "questionId=" . $questions[$i]->{'qid'});
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        $answers = json_decode($output);
+        //echo $output;
+        //echo count($answers);
+        if(getQuestionType($questions[$i]->{'qid'})=="Multiple Choice") {
+            $opts = json_decode(getMCOptions($questions[$i]->{'qid'}));
+            $json[] = array('qid'=>$questions[$i]->{'qid'},'question'=>$questions[$i]->{'question'},'answer'=>getMCQuestionAnswer($answers[0]->{'answersCorrect'},$questions[$i]->{'qid'}),'type'=>getQuestionType($questions[$i]->{'qid'}),'weight'=>getQuestionWeight($questions[$i]->{'qid'}),'opt1'=> $opts[0]->{'Opt'},'opt2'=> $opts[1]->{'Opt'},'opt3'=> $opts[2]->{'Opt'},'opt4'=> $opts[3]->{'Opt'});
+        } else {
+            $json[] = array('qid'=>$questions[$i]->{'qid'},'question'=>$questions[$i]->{'question'},'answer'=>$answers[0]->{'answersCorrect'},'type'=>getQuestionType($questions[$i]->{'qid'}),'weight'=>getQuestionWeight($questions[$i]->{'qid'}));
+        } 
+        
+    }
+    
+    curl_close($ch);
+    echo json_encode($json);
+    //echo getQuestionList();
 }
 
 // For features
+/*
 function getStudents() {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~ls339/cs490/middle/beta/getstudents.php");
@@ -631,6 +676,12 @@ function getStudents() {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
     echo $output;
+}
+ * 
+ */
+
+function passwordReset($username,$email) {
+    echo "in passwordReset";
 }
 
 /* Main */
@@ -648,11 +699,10 @@ switch ($_POST["cmd"]) {
         addOEQuestion($_POST["Question"],$_POST["Answer"],$_POST["weight"]);
         break;
     case "newExam":
-        newExam();
+        newExam($_POST);
         break;
     case "createExam":
         createExam($_POST);
-        //echo count($_POST);
         break;
     case "getExams":
         getExams($_POST['userId']);
@@ -661,19 +711,19 @@ switch ($_POST["cmd"]) {
         getExamList();
         break;
     case "takeExam":
-        //takeExam($_POST["exam"],$_POST["username"],$_POST["qid"]);
         takeExam($_POST);
         break;
     case "checkAnswer":
-        //checkAnswer($_POST["qid"],$_POST["answer"],$_POST["exam"]);
         checkAnswer($_POST);
-        //echo "in SWITCH";
         break;
     case "submitExam":
         submitExam($_POST);
         break;
     case "examScores":
         examScores($_POST["username"]);
+        break;
+    case "editExam":
+        editExam($_POST['examId']);
         break;
     case "getFeedback":
         getFeedback($_POST["userId"],$_POST["exam"]);
@@ -686,6 +736,9 @@ switch ($_POST["cmd"]) {
         break;
     case "getStudents":
         getStudents();
+        break;
+    case "getQuestion":
+        echo getQuestion($_POST['qid']);
         break;
     default:
         echo "You need to send me a command, for example: cmd = auth ";
