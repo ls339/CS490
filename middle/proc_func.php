@@ -1,13 +1,30 @@
 <?php
- 
+
+/* 
+ * ls339
+ * proc_func.php
+ * Final Version
+ */
+
 function isSubmitted($userId,$examId) {
-    //Fix
-    return true;
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/gettestsubmit.php");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "userid=".$userId."&testid=".$examId);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($ch);
+    $testStatus = json_decode($output);
+    curl_close($ch);
+    if($testStatus->{'Submitted'} == '1') {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function getExamId($examName) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettest.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/gettest.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
@@ -22,7 +39,7 @@ function getExamId($examName) {
 
 function getExamName($examId) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/gettest.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/gettest.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
@@ -37,7 +54,7 @@ function getExamName($examId) {
 
 function getQuestion($qid) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getquestions.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getquestions.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
@@ -52,7 +69,7 @@ function getQuestion($qid) {
 
 function getQuestionWeight($qid) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getquestions.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getquestions.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
@@ -67,7 +84,7 @@ function getQuestionWeight($qid) {
 
 function getMCQuestionAnswer($answer,$qid) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getqopts.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getqopts.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "qid=".$qid);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -79,24 +96,14 @@ function getMCQuestionAnswer($answer,$qid) {
     if($answer=="B") $opt = $opts[1]->{'Opt'};
     if($answer=="C") $opt = $opts[2]->{'Opt'};
     if($answer=="D") $opt = $opts[3]->{'Opt'};
-    /*
-    for($i=0;$i<count($opts);$i++) {
-        
-    }
-     * 
-     */
-    /*
-    for($i=0;$i<count($questions);$i++) {
-        if($questions[$i]->{'Id'}==$qid) $question = $questions[$i]->{'Question'};
-    }
-     * 
-     */
+
     curl_close($ch);
     return $opt;
 }
+
 function getMCOptions($qid) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getqopts.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getqopts.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "qid=".$qid);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -107,7 +114,7 @@ function getMCOptions($qid) {
 
 function getQuestionType($qid) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getquestions.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getquestions.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
@@ -125,7 +132,7 @@ function getQuestionType($qid) {
 
 function getQuestionList() {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getquestions.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getquestions.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "classId=0");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -134,7 +141,7 @@ function getQuestionList() {
     $json = array();
 
     for ($i = 0; $i < count($questions); $i++) {
-        curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getquestionanswers.php");
+        curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getquestionanswers.php");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, "questionId=" . $questions[$i]->{'Id'});
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -149,7 +156,7 @@ function getQuestionList() {
             $qtype = "True False";
         }
         if ($questions[$i]->{'QuestionType'} == '3') {
-            $qtype = "Open Ended";
+            $qtype = "Fill in the blank";
         }
         $json[] = array('question' => $questions[$i]->{'Question'}, 'qid' => $questions[$i]->{'Id'}, 'weight' => $questions[$i]->{'Weight'}, 'type' => $qtype);
     }
@@ -159,7 +166,7 @@ function getQuestionList() {
 
 function calculateScore($userId, $testId) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://afsaccess2.njit.edu/~es66/getstudenttest.php");
+    curl_setopt($ch, CURLOPT_URL, "https://web.njit.edu/~es66/getstudenttest.php");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "studentid=" . $userId . "&testid=" . $testId);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -182,133 +189,6 @@ function calculateScore($userId, $testId) {
     curl_close($ch);
     return $score = round(($studentScore / $maxScore) * 100) . "%";
 }
-/*
-function sortQuestions($json, $type, $weight) {
-    $questions = json_decode($json);
-    $json = array();
-
-    if ($type == "All" && $weight == "Easy") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"weight"} == "1") {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-
-    if ($type == "All" && $weight == "Medium") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"weight"} == "2") {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-    
-    if ($type == "All" && $weight == "Hard") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"weight"} == "3") {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }    
-    
-    if ($type == "True False" && $weight == "All") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "True False") {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-    
-    if ($type == "True False" && $weight == "Easy") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "True False" &&  $questions[$i]->{"weight"} == '1') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-    
-    if ($type == "True False" && $weight == "Medium") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "True False" &&  $questions[$i]->{"weight"} == '2') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-    
-    if ($type == "True False" && $weight == "Hard") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "True False" &&  $questions[$i]->{"weight"} == '3') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-    
-    if ($type == "Multiple Choice" && $weight == "All") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Multiple Choice") {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }      
-   
-    if ($type == "Multiple Choice" && $weight == "Easy") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Multiple Choice" &&  $questions[$i]->{"weight"} == '1') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-
-    if ($type == "Multiple Choice" && $weight == "Medium") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Multiple Choice" &&  $questions[$i]->{"weight"} == '2') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    } 
-    
-    if ($type == "Multiple Choice" && $weight == "Hard") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Multiple Choice" &&  $questions[$i]->{"weight"} == '3') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-
-    if ($type == "Fill in the blank" && $weight == "All") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended") {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }      
-   
-    if ($type == "Fill in the blank" && $weight == "Easy") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended" &&  $questions[$i]->{"weight"} == '1') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }
-
-    if ($type == "Fill in the blank" && $weight == "Medium") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended" &&  $questions[$i]->{"weight"} == '2') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    } 
-    
-    if ($type == "Fill in the blank" && $weight == "Hard") {
-        for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended" &&  $questions[$i]->{"weight"} == '3') {
-                $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
-            }
-        }
-    }      
-    return json_encode($json);
-}
-*/
 
 function sortQuestions($json, $type, $weight) {
     $questions = json_decode($json);
@@ -414,7 +294,7 @@ function sortQuestions($json, $type, $weight) {
 
     if ($type == "Fill in the blank" && $weight == "All") {
         for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended") {
+            if ($questions[$i]->{"type"} == "Fill in the blank") {
                 $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
             }
         }
@@ -422,7 +302,7 @@ function sortQuestions($json, $type, $weight) {
    
     if ($type == "Fill in the blank" && $weight == "Easy") {
         for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended" &&  $questions[$i]->{"weight"} == '1') {
+            if ($questions[$i]->{"type"} == "Fill in the blank" &&  $questions[$i]->{"weight"} == '1') {
                 $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
             }
         }
@@ -430,7 +310,7 @@ function sortQuestions($json, $type, $weight) {
 
     if ($type == "Fill in the blank" && $weight == "Medium") {
         for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended" &&  $questions[$i]->{"weight"} == '2') {
+            if ($questions[$i]->{"type"} == "Fill in the blank" &&  $questions[$i]->{"weight"} == '2') {
                 $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
             }
         }
@@ -438,7 +318,7 @@ function sortQuestions($json, $type, $weight) {
     
     if ($type == "Fill in the blank" && $weight == "Hard") {
         for ($i = 0; $i < count($questions); $i++) {
-            if ($questions[$i]->{"type"} == "Open Ended" &&  $questions[$i]->{"weight"} == '3') {
+            if ($questions[$i]->{"type"} == "Fill in the blank" &&  $questions[$i]->{"weight"} == '3') {
                 $json[] = array('qid' => $questions[$i]->{'qid'}, 'question' => $questions[$i]->{'question'}, 'type' => $questions[$i]->{'type'}, 'weight' => $questions[$i]->{'weight'});
             }
         }
