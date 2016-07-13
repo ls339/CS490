@@ -1,11 +1,6 @@
-# cs490
-cs490 Class project
+# MVC Web Portal
+Model View Controller Web Portal Application.
 
-The middle directory contains a single proc.php file which has all the function
-needed for the project.
+The web portal is written in PHP using Java Script. Json objects are used for 
+interprocess communication.
 
-The tools directory has command line testing scripts.
-
-Front and Back directories contain code for the front and back end.
-
-Test
